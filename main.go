@@ -13,7 +13,8 @@ func main() {
 	fmt.Println("Hello World!")
 
 	var lines = file_to_string_array()
-	fmt.Println(lines)
+	var runes = lines_to_ascii_matrix(lines)
+	fmt.Println(runes)
 
 	day01.Day01()
 }
@@ -33,6 +34,18 @@ func file_to_string_array() []string {
 	return lines
 }
 
-// func lines_to_char_matrix(lines []string) [][]byte {
-// 	return null
-// }
+func lines_to_ascii_matrix(lines []string) [][]rune {
+	var runes [][]rune
+
+	for _, line := range lines {
+		var chars []rune
+
+		for _, char := range line {
+			chars = append(chars, char)
+		}
+
+		runes = append(runes, chars)
+	}
+
+	return runes
+}
