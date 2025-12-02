@@ -5,8 +5,8 @@ import (
 	dict "aoc/types"
 	"bufio"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 var data_path = "./data.txt"
@@ -16,7 +16,6 @@ func main() {
 	var dict = lines_to_dict(lines, 1)
 	day01.Day01(dict)
 }
-
 
 func file_to_string_array() []string {
 	file, _ := os.Open(data_path)
@@ -33,7 +32,6 @@ func file_to_string_array() []string {
 	return lines
 }
 
-
 func lines_to_ascii_matrix(lines []string) [][]rune {
 	var runes [][]rune
 
@@ -48,9 +46,6 @@ func lines_to_ascii_matrix(lines []string) [][]rune {
 	}
 	return runes
 }
-
-
-
 
 func lines_to_dict(lines []string, keyLength int) []dict.Dict {
 	var m []dict.Dict
@@ -68,7 +63,7 @@ func lines_to_dict(lines []string, keyLength int) []dict.Dict {
 		}
 
 		valueInt, _ := strconv.Atoi(value.String())
-		m = append(m, dict.Dict{ Key: key.String(), Value: valueInt })
+		m = append(m, dict.Dict{Key: key.String(), Value: valueInt})
 	}
 
 	return m
