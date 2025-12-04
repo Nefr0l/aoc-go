@@ -28,7 +28,9 @@ func Day01(dict []dict.Dict) error {
 
 		switch entry.Key {
 		case "L":
-			if curr > entry.Value {
+			if curr == 0 {
+				curr = 100 - entry.Value
+			} else if curr > entry.Value {
 				curr -= entry.Value
 			} else if curr == entry.Value {
 				curr = 0
