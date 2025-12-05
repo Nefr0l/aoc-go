@@ -17,27 +17,30 @@ func Day03_part1(lines []string) {
 		}
 
 		n := 0
-		in := -1
+		mxIndex := -1
 
 		fmt.Println(nums)
 		fmt.Println(len(nums))
 		l := len(nums)
 
 		for j := 0; j < 12; j++ {
+			// don't know what the hell i did here but it works
+			lTrim := mxIndex + 1
+			rTrim := l - 11 + j
+			numsTrim := nums[lTrim:rTrim]
 
-			nTrim := nums[in+1 : (l - (11 - j))] // here
-			fmt.Println(nTrim)
-			fmt.Println(l - (11 - j))
+			mx := slices.Max(numsTrim)
+			mxIndex = slices.Index(numsTrim, mx) + lTrim // index for nums
 
-			mx := slices.Max(nTrim)
-			in = slices.Index(nTrim, mx)
+			//fmt.Printf("Numbers trimmed: %v (%v-%v)\n", numsTrim, lTrim, rTrim)
 
-			fmt.Println(j)
-
-			n += mx * int(math.Pow10(l-j))
+			n += mx * int(math.Pow10(11-j))
 
 		}
 
+		sum += n
+
+		// this is part 1
 		// numsTrim1 := nums[:len(nums)-1]
 		// max1 := slices.Max(numsTrim1)
 		// i := slices.Index(nums, max1)
@@ -46,8 +49,6 @@ func Day03_part1(lines []string) {
 		// max2 := slices.Max(numsTrim2)
 
 		// x := max1*10 + max2
-		sum += n
-		fmt.Println(n)
 
 		// fmt.Println(nums)
 		// fmt.Println(max2)
