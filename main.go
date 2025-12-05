@@ -12,12 +12,22 @@ import (
 var data_path = "./demo.txt"
 
 func main() {
-	// var lines = file_to_string_array()
-	// var dict = lines_to_dict(lines, 1)
-	// days.Day01(dict)
 
-	var vector = file_to_vector2()
-	days.Day02_part2(vector)
+	var lines = file_to_string_array()
+	days.Day03_part1(lines)
+
+	/*
+		var vector = file_to_vector2()
+		days.Day02_part2(vector)
+	*/
+
+	/*
+		// day 01
+		var lines = file_to_string_array()
+		var dict = lines_to_dict(lines, 1)
+		days.Day01(dict)
+	*/
+
 }
 
 // methods for handling files

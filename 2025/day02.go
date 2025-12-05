@@ -65,5 +65,4 @@ func Day02_part2(values []t.Vector2) {
 	}
 
 	fmt.Println(sum)
-	fmt.Println("fgdsgdf"[:0])
 }
