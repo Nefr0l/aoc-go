@@ -1,6 +1,6 @@
-package dict
+package types
 
 type Dict struct {
-	Key string
+	Key   string
 	Value int
 }
