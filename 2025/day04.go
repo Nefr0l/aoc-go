@@ -1,6 +1,9 @@
 package days
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func Day04_part1(matrix [][]rune) {
 	sum := 0
@@ -43,29 +46,35 @@ func Day04_part1(matrix [][]rune) {
 
 }
 
-func Day04_part2(matrix [][]rune) {
+func Day04_part2(matrix [][]rune) { // 9-10 milliseconds
+	start := time.Now()
 	sum := 0
 	height := len(matrix)
 	width := len(matrix[0])
 
-	for k := 0; k < 2000; k++ { // just some random ahh number
+	last_result := 0
+	cur_result := 0
 
+	for k := 0; k >= 0; k++ {
+		last_result = sum
 		for i := 1; i < height-1; i++ {
 
 			for j := 1; j < width-1; j++ {
 				char := matrix[i][j]
-				nearby := 0
 
 				if string(char) == "." {
 					continue
 				}
+
+				nearby := 0
+
 			out:
 				for y := -1; y <= 1; y++ {
 					for x := -1; x <= 1; x++ {
 						if !(x == 0 && y == 0) && matrix[i+y][j+x] == rune('@') {
 							nearby++
 
-							if nearby > 3 {
+							if nearby == 4 {
 								break out
 							}
 						}
@@ -77,9 +86,17 @@ func Day04_part2(matrix [][]rune) {
 					sum++
 				}
 			}
+
 		}
 
+		cur_result = sum
+		if last_result == cur_result {
+			fmt.Println(k)
+
+			break
+		}
 	}
 
 	fmt.Println(sum)
+	fmt.Println(time.Since(start))
 }
