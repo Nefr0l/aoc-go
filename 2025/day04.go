@@ -46,14 +46,12 @@ func Day04_part1(matrix [][]rune) {
 
 }
 
-func Day04_part2(matrix [][]rune) { // 9-10 milliseconds
+func Day04_part2(matrix [][]rune) { // ~5.5ms
 	start := time.Now()
 	sum := 0
 	height := len(matrix)
 	width := len(matrix[0])
-
 	last_result := 0
-	cur_result := 0
 
 	for k := 0; k >= 0; k++ {
 		last_result = sum
@@ -62,7 +60,7 @@ func Day04_part2(matrix [][]rune) { // 9-10 milliseconds
 			for j := 1; j < width-1; j++ {
 				char := matrix[i][j]
 
-				if string(char) == "." {
+				if char == rune('.') {
 					continue
 				}
 
@@ -81,7 +79,7 @@ func Day04_part2(matrix [][]rune) { // 9-10 milliseconds
 					}
 				}
 
-				if nearby <= 3 {
+				if nearby < 4 {
 					matrix[i][j] = rune('.')
 					sum++
 				}
@@ -89,10 +87,8 @@ func Day04_part2(matrix [][]rune) { // 9-10 milliseconds
 
 		}
 
-		cur_result = sum
-		if last_result == cur_result {
+		if last_result == sum {
 			fmt.Println(k)
-
 			break
 		}
 	}
