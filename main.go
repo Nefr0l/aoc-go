@@ -12,26 +12,15 @@ import (
 var data_path = "./demo.txt"
 
 func main() {
-
-	var lines = file_to_string_array()
-	days.Day03_part1(lines)
-
-	/*
-		var vector = file_to_vector2()
-		days.Day02_part2(vector)
-	*/
-
-	/*
-		// day 01
-		var lines = file_to_string_array()
-		var dict = lines_to_dict(lines, 1)
-		days.Day01(dict)
-	*/
+	var lines = file_to_lines()
+	var matrix = lines_to_matrix(lines)
+	var matrix_expanded = expand_matrix(matrix, rune('.'))
+	days.Day04_part2(matrix_expanded)
 
 }
 
 // methods for handling files
-func file_to_string_array() []string {
+func file_to_lines() []string {
 	file, _ := os.Open(data_path)
 
 	defer file.Close()
@@ -64,8 +53,8 @@ func file_to_vector2() []types.Vector2 {
 	return vector
 }
 
-// functions for working with lines[]
-func lines_to_ascii_matrix(lines []string) [][]rune {
+// functions for working with lines
+func lines_to_matrix(lines []string) [][]rune {
 	var runes [][]rune
 
 	for _, line := range lines {
@@ -100,4 +89,26 @@ func lines_to_dict(lines []string, keyLength int) []types.Dict {
 	}
 
 	return m
+}
+
+// functions for matrix
+func expand_matrix(matrix [][]rune, x rune) [][]rune {
+	var runes [][]rune
+
+	for i := -1; i <= len(matrix); i++ {
+		var chars []rune
+
+		for j := -1; j <= len(matrix[0]); j++ {
+			if j == -1 || j == len(matrix[0]) || i == -1 || i == len(matrix) {
+				chars = append(chars, x)
+
+			} else {
+				chars = append(chars, matrix[i][j])
+			}
+		}
+
+		runes = append(runes, chars)
+	}
+
+	return runes
 }
