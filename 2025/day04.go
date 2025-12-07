@@ -2,7 +2,6 @@ package days
 
 import (
 	"fmt"
-	"time"
 )
 
 func Day04_part1(matrix [][]rune) {
@@ -46,30 +45,31 @@ func Day04_part1(matrix [][]rune) {
 
 }
 
-func Day04_part2(matrix [][]rune) { // ~5.5ms
-	start := time.Now()
+func Day04_part2(matrix [][]rune) { // 5-6ms
+	height := len(matrix) - 1
+	width := len(matrix[0]) - 1
 	sum := 0
-	height := len(matrix)
-	width := len(matrix[0])
-	last_result := 0
+	prev := 0
 
-	for k := 0; k >= 0; k++ {
-		last_result = sum
-		for i := 1; i < height-1; i++ {
+	empty := rune('.')
+	paper := rune('@')
 
-			for j := 1; j < width-1; j++ {
+	for {
+		prev = sum
+		for i := 1; i < height; i++ {
+			for j := 1; j < width; j++ {
 				char := matrix[i][j]
 
-				if char == rune('.') {
+				if char == empty {
 					continue
 				}
 
-				nearby := 0
+				var nearby int8 = -1 // includes 0,0 character
 
 			out:
 				for y := -1; y <= 1; y++ {
 					for x := -1; x <= 1; x++ {
-						if !(x == 0 && y == 0) && matrix[i+y][j+x] == rune('@') {
+						if matrix[i+y][j+x] == paper {
 							nearby++
 
 							if nearby == 4 {
@@ -79,20 +79,19 @@ func Day04_part2(matrix [][]rune) { // ~5.5ms
 					}
 				}
 
-				if nearby < 4 {
-					matrix[i][j] = rune('.')
-					sum++
+				if nearby >= 4 {
+					continue
 				}
-			}
 
+				matrix[i][j] = rune('.')
+				sum++
+			}
 		}
 
-		if last_result == sum {
-			fmt.Println(k)
+		if prev == sum {
 			break
 		}
 	}
 
 	fmt.Println(sum)
-	fmt.Println(time.Since(start))
 }
