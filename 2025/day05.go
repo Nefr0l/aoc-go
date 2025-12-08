@@ -13,9 +13,7 @@ func Day05_part1(ranges []types.Vector2, values []int) {
 		for _, rg := range ranges {
 			if value >= rg.X && value <= rg.Y {
 				sum++
-				fmt.Println(value)
 				break
-
 			}
 		}
 	}
@@ -25,9 +23,8 @@ func Day05_part1(ranges []types.Vector2, values []int) {
 
 func Day05_part2(ranges []types.Vector2, values []int) {
 	sum := 0
-	fmt.Println(len(ranges))
 
-	// part one
+	// remove duplicates
 	for {
 		oldLen := len(ranges)
 
@@ -49,18 +46,15 @@ func Day05_part2(ranges []types.Vector2, values []int) {
 			}
 		}
 
-		fmt.Println(len(ranges))
 		if len(ranges) == oldLen {
 			break
 		}
 	}
 
-	// part two
+	// add sums
 	for _, r := range ranges {
 		sum += r.Y - r.X + 1
 	}
 
-	//fmt.Println(ranges)
 	fmt.Println(sum)
-
 }
