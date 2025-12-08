@@ -28,22 +28,24 @@ func Day05_part2(ranges []types.Vector2, values []int) {
 	for {
 		oldLen := len(ranges)
 
-		for i, r1 := range ranges {
-			for j, r2 := range ranges {
+		for i := 0; i < len(ranges); i++ {
+			for j := 0; j < len(ranges); j++ {
 				if i == j {
 					continue
 				}
 
-				if r2.Y <= r1.Y && r2.X >= r1.X {
+				if ranges[j].Y <= ranges[i].Y && ranges[j].X >= ranges[i].X {
 					ranges = slices.Delete(ranges, j, j+1)
-				} else if r2.X < r1.X && r2.Y < r1.Y && r2.Y >= r1.X {
-					ranges[i] = types.Vector2{X: r2.X, Y: r1.Y}
+				} else if ranges[j].X < ranges[i].X && ranges[j].Y < ranges[i].Y && ranges[j].Y >= ranges[i].X {
+					ranges[i] = types.Vector2{X: ranges[j].X, Y: ranges[i].Y}
 					ranges = slices.Delete(ranges, j, j+1)
-				} else if r2.Y > r1.Y && r2.X > r1.X && r2.X <= r1.Y {
-					ranges[i] = types.Vector2{X: r1.X, Y: r2.Y}
+				} else if ranges[j].Y > ranges[i].Y && ranges[j].X > ranges[i].X && ranges[j].X <= ranges[i].Y {
+					ranges[i] = types.Vector2{X: ranges[i].X, Y: ranges[j].Y}
 					ranges = slices.Delete(ranges, j, j+1)
 				}
 			}
+
+			fmt.Printf("Length of ranges[]: %v \n", len(ranges))
 		}
 
 		if len(ranges) == oldLen {
