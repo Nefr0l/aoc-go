@@ -10,8 +10,8 @@ func Day05_part1(ranges []types.Vector2, values []int) {
 	sum := 0
 
 	for _, value := range values {
-		for _, rg := range ranges {
-			if value >= rg.X && value <= rg.Y {
+		for _, r := range ranges {
+			if value >= r.X && value <= r.Y {
 				sum++
 				break
 			}
@@ -44,8 +44,6 @@ func Day05_part2(ranges []types.Vector2, values []int) {
 					ranges = slices.Delete(ranges, j, j+1)
 				}
 			}
-
-			fmt.Printf("Length of ranges[]: %v \n", len(ranges))
 		}
 
 		if len(ranges) == oldLen {
