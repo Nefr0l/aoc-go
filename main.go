@@ -16,16 +16,17 @@ var data_path = "./demo.txt"
 func main() {
 	start := time.Now()
 	var lines = get_lines()
-
-	// day - specific
-	var point = slices.Index(lines, "")
-	var ranges = lines_to_vector(lines[:point])
-	var values = lines_to_int_slice(lines[point+1:])
-	days.Day05_part2(ranges, values)
+	days.Day06_part1(lines)
 
 	// total time
 	fmt.Println(time.Since(start))
 
+}
+
+// specific days
+func run_day05(lines []string) {
+	var point = slices.Index(lines, "") // day05
+	days.Day05_part2(lines_to_vector(lines[:point]), lines_to_int_slice(lines[point+1:]))
 }
 
 // file handling
