@@ -20,12 +20,6 @@ func Day01(dict []dict.Dict) error {
 		zeros += entry.Value / 100
 		entry.Value = entry.Value % 100
 
-		if entry.Value == 0 {
-			err := fmt.Errorf("lol")
-			fmt.Println(err.Error())
-			return err
-		}
-
 		switch entry.Key {
 		case "L":
 			if curr == 0 {

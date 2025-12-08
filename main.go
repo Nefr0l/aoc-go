@@ -5,6 +5,7 @@ import (
 	types "aoc/types"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -14,12 +15,15 @@ var data_path = "./demo.txt"
 
 func main() {
 	start := time.Now()
-
 	var lines = get_lines()
-	var matrix = lines_to_matrix(lines)
-	var matrix_expanded = expand_matrix(matrix, rune('.'))
-	days.Day04_part2(matrix_expanded)
 
+	// day - specific
+	var point = slices.Index(lines, "")
+	var ranges = lines_to_vector(lines[:point])
+	var values = lines_to_int_slice(lines[point+1:])
+	days.Day05_part2(ranges, values)
+
+	// total time
 	fmt.Println(time.Since(start))
 
 }
@@ -81,6 +85,17 @@ func lines_to_dict(lines []string, keyLength int) []types.Dict {
 	}
 
 	return m
+}
+
+func lines_to_int_slice(lines []string) []int {
+	var nums []int
+
+	for _, line := range lines {
+		n, _ := strconv.Atoi(line)
+		nums = append(nums, n)
+	}
+
+	return nums
 }
 
 // matrix handling
