@@ -55,66 +55,38 @@ func Day06_part1(lines []string) {
 }
 
 func Day06_part2(lines []string) {
-	get_raw_lines(lines)
-	get_raw_columns()
+	indexes := get_indexes(lines)
+	fmt.Println(indexes)
 
-	sum := 0
-
-	for _, column := range Columns {
-		fmt.Println(column)
-
-		//var columnf [][]rune
-
-	}
-
-	fmt.Println(sum)
 }
 
 // raw
-func get_raw_lines(lines []string) {
-	for _, line := range lines {
-		var values []string = strings.Split(line, " ")
-		var nums []string
+func get_indexes(lines []string) []int {
+	spaceIndex := 0
+	width := len(lines[0])
+	var indexes []int
 
-		for _, v := range values {
-			switch v {
-			case "*":
-				nums = append(nums, "*")
-			case "+":
-				nums = append(nums, "+")
-			default:
-				nums = append(nums, v)
+	for i := spaceIndex; i < width; i++ {
+
+		emptyRow := true
+
+		for j, line := range lines {
+			if j == len(lines)-2 {
+				break
+			}
+
+			if line[i] != ' ' {
+				emptyRow = false
 			}
 		}
-		LinesRaw = append(LinesRaw, LineValueRaw{Values: nums})
+
+		if emptyRow {
+			spaceIndex = i
+			indexes = append(indexes, spaceIndex)
+		}
 	}
 
-	fmt.Println(LinesRaw)
-}
-
-func get_raw_columns() { // TODO: FIX THIS
-	width := len(LinesRaw[0].Values)
-
-	for x := 0; x < width; x++ {
-		var col ColumnValueRaw
-
-		for y := 0; y < len(Lines)-1; y++ {
-			col.Values = append(col.Values, LinesRaw[y].Values[x])
-		}
-
-		num := LinesRaw[len(Lines)-1].Values[x]
-
-		switch num {
-		case "*":
-			col.Char = "*"
-		case "+":
-			col.Char = "+"
-		}
-
-		ColumnsRaw = append(ColumnsRaw, col)
-	}
-
-	fmt.Println(ColumnsRaw)
+	return indexes
 }
 
 // non-raw
