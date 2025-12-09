@@ -2,6 +2,7 @@ package days
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -55,8 +56,79 @@ func Day06_part1(lines []string) {
 }
 
 func Day06_part2(lines []string) {
+	// higher than 10227054229927
+
 	indexes := get_indexes(lines)
+	indexes = append([]int{0}, indexes...)
 	fmt.Println(indexes)
+
+	totalSum := 0
+
+	for i := 0; i < len(indexes)-1; i++ {
+		// get start and end index
+		startIndex := indexes[i] + 1
+		endIndex := indexes[i+1]
+
+		if i == 0 {
+			startIndex = 0
+		} else if i == len(indexes)-2 {
+			endIndex = len(lines[0])
+		}
+
+		fmt.Printf("Calculating numbers from index %v to %v \n", startIndex, endIndex)
+
+		// work with indexes
+
+		var numbers []int
+		for x := startIndex; x < endIndex; x++ {
+			var number int = 0
+
+			for y := 0; y < len(lines)-1; y++ {
+				temp := int(lines[y][x]) - 48
+
+				if temp == -16 {
+					number /= 10
+					continue
+
+				}
+
+				pow := len(lines) - 2 - y
+				number += int(math.Pow10(pow)) * temp
+			}
+
+			numbers = append(numbers, number)
+		}
+
+		fmt.Println(numbers)
+
+		// add or multiply
+		char := lines[len(lines)-1][startIndex]
+
+		var sum int
+		switch char {
+		case 42: // *
+			sum = 1
+		case 43: // +
+			sum = 0
+		}
+
+		for _, n := range numbers {
+			switch char {
+			case 42:
+				if n != 0 {
+					sum *= n
+				}
+
+			case 43:
+				sum += n
+			}
+		}
+
+		totalSum += sum
+		fmt.Println(sum)
+	}
+
+	fmt.Println(totalSum)
 
 }
 
@@ -77,6 +149,7 @@ func get_indexes(lines []string) []int {
 
 			if line[i] != ' ' {
 				emptyRow = false
+				break
 			}
 		}
 
