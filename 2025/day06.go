@@ -11,24 +11,13 @@ type LineValue struct {
 	Values []int
 }
 
-type LineValueRaw struct {
-	Values []string
-}
-
 type ColumnValue struct {
 	Values []int
 	Char   rune
 }
 
-type ColumnValueRaw struct {
-	Values []string
-	Char   string
-}
-
 var Lines []LineValue
-var LinesRaw []LineValueRaw
 var Columns []ColumnValue
-var ColumnsRaw []ColumnValueRaw
 
 func Day06_part1(lines []string) {
 	get_lines_values(lines)
@@ -57,12 +46,12 @@ func Day06_part1(lines []string) {
 
 func Day06_part2(lines []string) {
 	// higher than 10227054229927
-
 	indexes := get_indexes(lines)
 	indexes = append([]int{0}, indexes...)
+	indexes = append(indexes, len(lines[0]))
 	fmt.Println(indexes)
 
-	totalSum := 0
+	sum := 0
 
 	for i := 0; i < len(indexes)-1; i++ {
 		// get start and end index
@@ -71,14 +60,11 @@ func Day06_part2(lines []string) {
 
 		if i == 0 {
 			startIndex = 0
-		} else if i == len(indexes)-2 {
-			endIndex = len(lines[0])
 		}
 
-		fmt.Printf("Calculating numbers from index %v to %v \n", startIndex, endIndex)
+		fmt.Printf("Calculating numbers from index %v to %v... ", startIndex, endIndex)
 
 		// work with indexes
-
 		var numbers []int
 		for x := startIndex; x < endIndex; x++ {
 			var number int = 0
@@ -86,10 +72,9 @@ func Day06_part2(lines []string) {
 			for y := 0; y < len(lines)-1; y++ {
 				temp := int(lines[y][x]) - 48
 
-				if temp == -16 {
+				if temp == -16 { // empty character
 					number /= 10
 					continue
-
 				}
 
 				pow := len(lines) - 2 - y
@@ -99,40 +84,34 @@ func Day06_part2(lines []string) {
 			numbers = append(numbers, number)
 		}
 
-		fmt.Println(numbers)
-
 		// add or multiply
 		char := lines[len(lines)-1][startIndex]
 
-		var sum int
+		var result int
 		switch char {
-		case 42: // *
-			sum = 1
-		case 43: // +
-			sum = 0
+		case '*':
+			result = 1
+		case '+':
+			result = 0
 		}
 
 		for _, n := range numbers {
 			switch char {
-			case 42:
-				if n != 0 {
-					sum *= n
-				}
-
-			case 43:
-				sum += n
+			case '*':
+				result *= n
+			case '+':
+				result += n
 			}
 		}
 
-		totalSum += sum
-		fmt.Println(sum)
+		sum += result
+		fmt.Printf("numbers are: %v and the result is: %v \n", numbers, sum)
 	}
 
-	fmt.Println(totalSum)
+	fmt.Println(sum)
 
 }
 
-// raw
 func get_indexes(lines []string) []int {
 	spaceIndex := 0
 	width := len(lines[0])
@@ -142,10 +121,7 @@ func get_indexes(lines []string) []int {
 
 		emptyRow := true
 
-		for j, line := range lines {
-			if j == len(lines)-2 {
-				break
-			}
+		for _, line := range lines {
 
 			if line[i] != ' ' {
 				emptyRow = false
@@ -162,7 +138,6 @@ func get_indexes(lines []string) []int {
 	return indexes
 }
 
-// non-raw
 func get_lines_values(lines []string) {
 	for _, line := range lines {
 		var values []string = strings.Fields(line)
