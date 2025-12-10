@@ -16,7 +16,7 @@ var data_path = "./demo.txt"
 func main() {
 	start := time.Now()
 	var lines = get_lines()
-	days.Day06_part2(lines)
+	days.Day07_part2(lines)
 
 	// total time
 	fmt.Println(time.Since(start))
