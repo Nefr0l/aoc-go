@@ -3,6 +3,7 @@ package days
 import (
 	"aoc/types"
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -35,35 +36,48 @@ func Day07_part2(lines []string) {
 	s := strings.Index(lines[0], "S")
 
 	globalLines = lines
-
 	linesLength = len(globalLines)
-
 	Beams = append(Beams, Beam{s, 1})
 
-	for i := 0; i < linesLength; i += 2 {
-		fmt.Printf("line: %v , res: %v \n", i, timelines)
+	for i := 2; i < linesLength; i += 2 {
+		//fmt.Printf("line: %v , res: %v \n", i, timelines)
 
-		for j, beam := range Beams {
+		for j := 0; j < len(Beams); j++ {
+			beam := Beams[j]
+
 			if globalLines[i][beam.index] == '^' {
 				timelines += uint64(beam.value)
 
-				beam1 := Beam{beam.index - 1, 1}
-				beam2 := Beam{beam.index + 1, 1}
+				beam1 := Beam{beam.index - 1, beam.value}
+				beam2 := Beam{beam.index + 1, beam.value}
 
 				Beams[j] = beam1
 				Beams = append(Beams, beam2)
-
 			}
 		}
+
+		Beams = RemoveDuplicates()
 	}
 
 	fmt.Println(timelines)
 }
 
-func RemoveDuplicates() {
+func RemoveDuplicates() []Beam {
+	var temp []Beam = Beams
 
+	for i := 0; i < len(temp); i++ {
+		for j := 0; j < len(temp); j++ {
+			if temp[i].index == temp[j].index && i != j {
+				temp[i].value += temp[j].value
+				temp = slices.Delete(temp, j, j+1)
+			}
+		}
+	}
+
+	return temp
 }
 
+// this is for part one
 func StartBeam(start types.Vector2, lines []string) {
 	var current types.Vector2 = start
 
@@ -99,19 +113,3 @@ func StartBeam(start types.Vector2, lines []string) {
 	}
 
 }
-
-// func Beam(X uint8, Y uint8) {
-// 	if Y == linesLength {
-// 		return
-// 	}
-
-// 	if globalLines[Y][X] == '^' {
-// 		timelines++
-// 		fmt.Println(X)
-
-// 		Beam(X-1, Y+2)
-// 		Beam(X+1, Y+2)
-// 	} else {
-// 		Beam(X, Y+2)
-// 	}
-// }
