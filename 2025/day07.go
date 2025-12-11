@@ -9,7 +9,14 @@ import (
 var sum int = 0
 var timelines uint64 = 1
 var globalLines []string
-var linesLength int16 = 0
+var linesLength int = 0
+
+type Beam struct {
+	index int
+	value int
+}
+
+var Beams []Beam
 
 func Day07_part1(lines []string) {
 	tempLines := lines
@@ -27,20 +34,34 @@ func Day07_part1(lines []string) {
 func Day07_part2(lines []string) {
 	s := strings.Index(lines[0], "S")
 
-	for _, line := range lines {
-		if strings.ContainsAny(line, "^") {
-			globalLines = append(globalLines, line)
+	globalLines = lines
+
+	linesLength = len(globalLines)
+
+	Beams = append(Beams, Beam{s, 1})
+
+	for i := 0; i < linesLength; i += 2 {
+		fmt.Printf("line: %v , res: %v \n", i, timelines)
+
+		for j, beam := range Beams {
+			if globalLines[i][beam.index] == '^' {
+				timelines += uint64(beam.value)
+
+				beam1 := Beam{beam.index - 1, 1}
+				beam2 := Beam{beam.index + 1, 1}
+
+				Beams[j] = beam1
+				Beams = append(Beams, beam2)
+
+			}
 		}
 	}
 
-	linesLength = int16(len(globalLines))
-	for _, line := range globalLines {
-		fmt.Println(line)
-	}
-
-	StartBeam2(int16(s), 0)
-
 	fmt.Println(timelines)
+}
+
+func RemoveDuplicates() {
+
 }
 
 func StartBeam(start types.Vector2, lines []string) {
@@ -79,36 +100,18 @@ func StartBeam(start types.Vector2, lines []string) {
 
 }
 
-func StartBeam2(X int16, Y int16) bool {
+// func Beam(X uint8, Y uint8) {
+// 	if Y == linesLength {
+// 		return
+// 	}
 
-	if Y == linesLength-1 {
-		return false
-	}
+// 	if globalLines[Y][X] == '^' {
+// 		timelines++
+// 		fmt.Println(X)
 
-	if globalLines[Y][X] != '^' {
-		return false
-	}
-
-	if X > 0 {
-		for y := Y; y < linesLength; y++ {
-			if StartBeam2(X-1, y) == true {
-				break
-			}
-
-		}
-
-	}
-
-	if X < linesLength-1 {
-		for y := Y; y < linesLength; y++ {
-			if StartBeam2(X+1, y) == true {
-				break
-			}
-		}
-	}
-
-	fmt.Println(timelines)
-
-	timelines++
-	return true
-}
+// 		Beam(X-1, Y+2)
+// 		Beam(X+1, Y+2)
+// 	} else {
+// 		Beam(X, Y+2)
+// 	}
+// }
