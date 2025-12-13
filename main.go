@@ -16,17 +16,16 @@ var data_path = "./demo.txt"
 func main() {
 	start := time.Now()
 	var lines = get_lines()
-	days.Day07_part2(lines)
+	var v3 = lines_to_vector3(lines, ",")
+	days.Day08_part1(v3)
 
-	// total time
 	fmt.Println(time.Since(start))
-
 }
 
 // specific days
 func run_day05(lines []string) {
 	var point = slices.Index(lines, "") // day05
-	days.Day05_part2(lines_to_vector(lines[:point]), lines_to_int_slice(lines[point+1:]))
+	days.Day05_part2(lines_to_vector2(lines[:point]), lines_to_int_slice(lines[point+1:]))
 }
 
 // file handling
@@ -36,7 +35,7 @@ func get_lines() []string {
 }
 
 // lines handling
-func lines_to_vector(lines []string) []types.Vector2 {
+func lines_to_vector2(lines []string) []types.Vector2 {
 	var vector []types.Vector2
 
 	for _, value := range lines {
@@ -46,6 +45,22 @@ func lines_to_vector(lines []string) []types.Vector2 {
 		y, _ := strconv.Atoi(temp[1])
 
 		vector = append(vector, types.Vector2{X: x, Y: y})
+	}
+
+	return vector
+}
+
+func lines_to_vector3(lines []string, char string) []types.Vector3 {
+	var vector []types.Vector3
+
+	for _, value := range lines {
+		temp := strings.Split(value, char)
+
+		x, _ := strconv.Atoi(temp[0])
+		y, _ := strconv.Atoi(temp[1])
+		z, _ := strconv.Atoi(temp[2])
+
+		vector = append(vector, types.Vector3{X: x, Y: y, Z: z})
 	}
 
 	return vector
