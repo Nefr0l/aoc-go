@@ -17,7 +17,7 @@ type link struct {
 
 func Day08_part1(values []types.Vector3) {
 	var points []point
-	var links []link
+	var links []*link
 
 	for _, v := range values {
 		points = append(points, point{position: v})
@@ -44,20 +44,22 @@ func Day08_part1(values []types.Vector3) {
 			}
 		}
 
-		//fmt.Printf("closest to: %v 	is point %v		which is %v\n", a, closestPoint, minimalDistance)
-
+		// TODO: 10 or 1000 pairs max
 		// do something with the closest point
 
-		if points[closestIndex].link != nil {
+		if points[i] == points[closestIndex] {
+			continue
+		}
+
+		if points[closestIndex].link == nil { // if b does not have link
 			var l link
-			l.points = append(l.points, a, points[closestIndex])
-			links = append(links, l)
+			l.points = append(l.points, a, points[closestIndex]) // maybe check for link's length ?
+			links = append(links, &l)
 
 			points[i].link = &l
 			points[closestIndex].link = points[i].link
-		} else { // error is here, sth with invalid pointer
+		} else if points[closestIndex].link != points[i].link { // if b does have link and it's not the same link as a's link
 			points[closestIndex].link.points = append(points[closestIndex].link.points, points[i])
-
 			points[i].link = points[closestIndex].link
 		}
 
@@ -65,7 +67,10 @@ func Day08_part1(values []types.Vector3) {
 
 	}
 
+	fmt.Println("")
+
 	for _, l := range links {
 		fmt.Println(l)
 	}
+
 }
