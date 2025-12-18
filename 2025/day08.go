@@ -22,67 +22,68 @@ type distance struct {
 	length float64
 }
 
+var distances []*distance
+var points []*point
+var links []*link
+
 func Day08_part1(values []types.Vector3) {
-	var points []point
-	var links []*link
-	var distances []distance
 
 	for _, v := range values {
-		points = append(points, point{position: v})
+		points = append(points, &point{position: v, link: &link{}})
 	}
 
-	// calculate closest diistances
+	// calculate closest distances - sth wrong here
 	for i, a := range points {
-		minimalDistance := 0.0
-		closestIndex := 0
+		minDistance := 0.0
+		closestIdx := 0
 
 		for j, b := range points {
 			if i == j {
 				continue
 			}
 
-			d := math.Sqrt(math.Pow(float64(b.position.X-a.position.X), 2) + math.Pow(float64(b.position.Y-a.position.Y), 2) + math.Pow(float64(b.position.Z-a.position.Z), 2))
+			a2 := math.Pow(float64(b.position.X-a.position.X), 2)
+			b2 := math.Pow(float64(b.position.Y-a.position.Y), 2)
+			c2 := math.Pow(float64(b.position.Z-a.position.Z), 2)
+			d := math.Sqrt(a2 + b2 + c2)
 
-			if minimalDistance == 0 || d < minimalDistance {
-				minimalDistance = d
-				closestIndex = j
+			if minDistance == 0 || d < minDistance {
+				minDistance = d
+				closestIdx = j
 			}
 		}
 
-		d := distance{aIdx: i, bIdx: closestIndex, length: minimalDistance}
+		d := distance{aIdx: i, bIdx: closestIdx, length: minDistance}
+		idx := CanAdd(d)
 
-		idx := CanAdd(distances, d)
-		if idx == -2 {
-			distances = append(distances, d)
-		} else if idx == -1 {
+		switch idx {
+		case -2:
+			distances = append(distances, &d)
+		case -1:
 			continue
-		} else {
-			distances[idx] = d
+		default:
+			distances[idx] = &d
 		}
 	}
 
 	// print distances
-	for _, d := range distances {
-		fmt.Printf("point a: %v		point b: %v		distance: %v \n", points[d.aIdx], points[d.bIdx], d.length)
-	}
+	// for _, d := range distances {
+	// 	fmt.Printf("a: %v \t b: %v \t d: %v \n", points[d.aIdx], points[d.bIdx], d.length)
+	// }
 
 	// work with top 10 minimal distances
 	for _, d := range distances {
-		a := &points[d.aIdx]
-		b := &points[d.bIdx]
+		a := points[d.aIdx]
+		b := points[d.bIdx]
 
-		if a == b {
-			continue
-		}
-
-		if b.link == nil { // if b does not have link
-			var l link
-			l.points = append(l.points, *a, *b)
-			links = append(links, &l)
-
+		if len(b.link.points) == 0 { // here is error, i can feel it
+			var l link = link{points: []point{*a, *b}}
 			a.link = &l
+
 			b.link = a.link
-		} else if a.link != b.link { // if b does have link and it's not the same link as a's link
+
+			links = append(links, a.link)
+		} else if a.link != b.link {
 			b.link.points = append(b.link.points, *a)
 			a.link = b.link
 		}
@@ -94,13 +95,11 @@ func Day08_part1(values []types.Vector3) {
 	fmt.Println(len(distances))
 
 	for _, l := range links {
-		fmt.Println(l)
+		fmt.Println(l.points)
 	}
-
 }
 
-func CanAdd(distances []distance, d distance) int {
-
+func CanAdd(d distance) int {
 	// check length
 	if len(distances) < 10 {
 		return -2
