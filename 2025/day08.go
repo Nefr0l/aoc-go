@@ -5,125 +5,104 @@ import (
 	"fmt"
 	"math"
 	"slices"
+	"sort"
 )
 
-type point struct {
-	position types.Vector3
-	link     *link
+type connection struct {
+	a        types.Vector3
+	b        types.Vector3
+	distance float64
 }
 
 type link struct {
-	points []point
+	// parent types.Vector3
+	points []types.Vector3
 }
 
-type distance struct {
-	aIdx   int
-	bIdx   int
-	length float64
-}
+var conns []connection
+var links []link
 
-var distances []*distance
-var points []*point
-var links []*link
+func Day08_part1(points []types.Vector3) {
 
-func Day08_part1(values []types.Vector3) {
-
-	for _, v := range values {
-		points = append(points, &point{position: v, link: &link{}})
-	}
-
-	// calculate closest distances - sth wrong here
 	for i, a := range points {
-		minDistance := 0.0
-		closestIdx := 0
+		for j := i + 1; j < len(points); j++ {
+			b := points[j]
 
-		for j, b := range points {
-			if i == j {
-				continue
-			}
-
-			a2 := math.Pow(float64(b.position.X-a.position.X), 2)
-			b2 := math.Pow(float64(b.position.Y-a.position.Y), 2)
-			c2 := math.Pow(float64(b.position.Z-a.position.Z), 2)
+			a2 := math.Pow(float64(b.X-a.X), 2)
+			b2 := math.Pow(float64(b.Y-a.Y), 2)
+			c2 := math.Pow(float64(b.Z-a.Z), 2)
 			d := math.Sqrt(a2 + b2 + c2)
 
-			if minDistance == 0 || d < minDistance {
-				minDistance = d
-				closestIdx = j
+			conns = append(conns, connection{a: a, b: b, distance: d})
+		}
+	}
+
+	sort.Slice(conns, func(i, j int) bool {
+		return conns[i].distance < conns[j].distance
+	})
+
+	conns = conns[:10]
+
+	for _, c := range conns {
+		links = append(links, link{[]types.Vector3{c.a, c.b}})
+		fmt.Println(c)
+	}
+
+	// work with top 10 connections
+
+	for i := 0; i < len(links); i++ {
+
+		for j := i + 1; j < len(links)-1; j++ {
+
+			for _, iPoint := range links[i].points {
+				idx := slices.Index(links[j].points, iPoint)
+
+				if idx != -1 {
+					for _, jPoint := range links[j].points {
+						if jPoint != links[j].points[idx] {
+							links[i].points = append(links[i].points, jPoint)
+						}
+					}
+
+					links = slices.Delete(links, j, j+1)
+				}
 			}
-		}
 
-		d := distance{aIdx: i, bIdx: closestIdx, length: minDistance}
-		idx := CanAdd(d)
+			// // parents match
+			// if links[i].parent == links[j].parent {
+			// 	links[i].points = append(links[i].points, links[j].points...)
+			// 	links = slices.Delete(links, j, j+1)
+			// }
 
-		switch idx {
-		case -2:
-			distances = append(distances, &d)
-		case -1:
-			continue
-		default:
-			distances[idx] = &d
+			// // a point is b parent
+			// idx := slices.Index(links[j].points, links[i].parent)
+
+			// if idx != -1 {
+			// 	links[i].points = append(links[i].points, links[j].parent)
+
+			// 	for fooIdx, foo := range links[j].points {
+			// 		if fooIdx != idx {
+			// 			links[i].points = append(links[i].points, foo)
+			// 		}
+			// 	}
+
+			// 	links = slices.Delete(links, j, j+1)
+			// }
+
+			// // a parent is b point
+			// idx = slices.Index(links[i].points, links[j].parent)
+
+			// if idx != -1 {
+			// 	links[i].points = append(links[i].points, links[j].points...)
+			// 	links = slices.Delete(links, j, j+1)
+			// }
 		}
 	}
 
-	// print distances
-	// for _, d := range distances {
-	// 	fmt.Printf("a: %v \t b: %v \t d: %v \n", points[d.aIdx], points[d.bIdx], d.length)
-	// }
-
-	// work with top 10 minimal distances
-	for _, d := range distances {
-		a := points[d.aIdx]
-		b := points[d.bIdx]
-
-		if len(b.link.points) == 0 { // here is error, i can feel it
-			var l link = link{points: []point{*a, *b}}
-			a.link = &l
-
-			b.link = a.link
-
-			links = append(links, a.link)
-		} else if a.link != b.link {
-			b.link.points = append(b.link.points, *a)
-			a.link = b.link
-		}
-
-	}
-
-	// debug prints
+	// debug
 	fmt.Println("")
-	fmt.Println(len(distances))
-
 	for _, l := range links {
-		fmt.Println(l.points)
+		fmt.Printf("points: %v \n", l.points)
 	}
-}
-
-func CanAdd(d distance) int {
-	// check length
-	if len(distances) < 10 {
-		return -2
-	}
-
-	// check duplicates
-	for _, d2 := range distances {
-		if d.aIdx == d2.bIdx && d.bIdx == d2.aIdx {
-			return -1
-		}
-	}
-
-	// check if length < max
-	var lengths []float64
-	for _, d := range distances {
-		lengths = append(lengths, d.length)
-	}
-
-	mx := slices.Max(lengths)
-	idx := slices.Index(lengths, mx)
-
-	if d.length < mx {
-		return idx
-	}
-
-	return -1
+	fmt.Println(len(links))
 }
