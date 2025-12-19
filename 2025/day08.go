@@ -15,7 +15,6 @@ type connection struct {
 }
 
 type link struct {
-	// parent types.Vector3
 	points []types.Vector3
 }
 
@@ -42,67 +41,55 @@ func Day08_part1(points []types.Vector3) {
 	})
 
 	conns = conns[:10]
-
 	for _, c := range conns {
 		links = append(links, link{[]types.Vector3{c.a, c.b}})
-		fmt.Println(c)
 	}
 
-	// work with top 10 connections
+	for i := 0; i < len(links)-1; i++ {
+		fmt.Println("")
+		fmt.Println(i)
 
-	for i := 0; i < len(links); i++ {
+		for _, l := range links {
+			fmt.Printf("points: %v \n", l.points)
+		}
+		fmt.Println(len(links))
 
-		for j := i + 1; j < len(links)-1; j++ {
+		ShortenLink(i)
+	}
+}
 
-			for _, iPoint := range links[i].points {
-				idx := slices.Index(links[j].points, iPoint)
+func ShortenLink(index int) link { // error is here
+	RemoveDupes(index)
 
-				if idx != -1 {
-					for _, jPoint := range links[j].points {
-						if jPoint != links[j].points[idx] {
-							links[i].points = append(links[i].points, jPoint)
-						}
-					}
+	for j := index + 1; j < len(links); j++ {
+		for jPoint := 0; jPoint < len(links[j].points); jPoint++ {
 
-					links = slices.Delete(links, j, j+1)
-				}
+			n := links[j].points[jPoint]
+			idx := slices.Index(links[index].points, n)
+
+			if idx != -1 {
+				links[index].points = append(links[index].points, links[j].points...)
+				links = slices.Delete(links, j, j+1)
+				ShortenLink(index)
 			}
-
-			// // parents match
-			// if links[i].parent == links[j].parent {
-			// 	links[i].points = append(links[i].points, links[j].points...)
-			// 	links = slices.Delete(links, j, j+1)
-			// }
-
-			// // a point is b parent
-			// idx := slices.Index(links[j].points, links[i].parent)
-
-			// if idx != -1 {
-			// 	links[i].points = append(links[i].points, links[j].parent)
-
-			// 	for fooIdx, foo := range links[j].points {
-			// 		if fooIdx != idx {
-			// 			links[i].points = append(links[i].points, foo)
-			// 		}
-			// 	}
-
-			// 	links = slices.Delete(links, j, j+1)
-			// }
-
-			// // a parent is b point
-			// idx = slices.Index(links[i].points, links[j].parent)
-
-			// if idx != -1 {
-			// 	links[i].points = append(links[i].points, links[j].points...)
-			// 	links = slices.Delete(links, j, j+1)
-			// }
 		}
 	}
 
-	// debug
-	fmt.Println("")
-	for _, l := range links {
-		fmt.Printf("points: %v \n", l.points)
+	return links[index]
+}
+
+func RemoveDupes(index int) {
+	var temp link = links[index]
+
+	sort.Slice(temp.points, func(i, j int) bool {
+		return temp.points[i].X <= temp.points[j].X
+	})
+
+	for i := 0; i < len(temp.points)-1; i++ {
+		if temp.points[i] == temp.points[i+1] {
+			temp.points = slices.Delete(temp.points, i, i+1)
+		}
 	}
-	fmt.Println(len(links))
+
+	links[index] = temp
 }
