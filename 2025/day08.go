@@ -19,13 +19,10 @@ var links [][]types.Vector3
 var n = 1000
 
 func Day08_part1(points []types.Vector3) {
-	for i, a := range points { // get shortest connections
+	for i, a := range points {
 		for _, b := range points[i+1:] {
-			a2 := math.Pow(float64(b.X-a.X), 2)
-			b2 := math.Pow(float64(b.Y-a.Y), 2)
-			c2 := math.Pow(float64(b.Z-a.Z), 2)
-			d := math.Sqrt(a2 + b2 + c2)
-
+			d2 := math.Pow(float64(b.X-a.X), 2) + math.Pow(float64(b.Y-a.Y), 2) + math.Pow(float64(b.Z-a.Z), 2)
+			d := math.Sqrt(d2)
 			conns = append(conns, connection{a: a, b: b, distance: d})
 		}
 	}
@@ -34,8 +31,8 @@ func Day08_part1(points []types.Vector3) {
 		return conns[i].distance < conns[j].distance
 	})
 
-	conns = conns[:n]
-	for _, c := range conns { // get n shortest links
+	conns = conns[:n] // get n shortest links
+	for _, c := range conns {
 		links = append(links, []types.Vector3{c.a, c.b})
 	}
 
@@ -47,9 +44,9 @@ func Day08_part1(points []types.Vector3) {
 		return len(links[i]) > len(links[j])
 	})
 
+	links = links[:3] // get top 3 links
 	sum := 1
-	links = links[:3]
-	for _, v := range links { // get top 3 links
+	for _, v := range links {
 		sum *= len(v)
 	}
 
@@ -57,7 +54,44 @@ func Day08_part1(points []types.Vector3) {
 }
 
 func Day08_part2(points []types.Vector3) {
-	// todo
+	for i, a := range points {
+		for _, b := range points[i+1:] {
+			d2 := math.Pow(float64(b.X-a.X), 2) + math.Pow(float64(b.Y-a.Y), 2) + math.Pow(float64(b.Z-a.Z), 2)
+			d := math.Sqrt(d2)
+			conns = append(conns, connection{a: a, b: b, distance: d})
+		}
+	}
+
+	sort.Slice(conns, func(i, j int) bool {
+		return conns[i].distance < conns[j].distance
+	})
+
+	for _, c := range conns {
+		links = append(links, []types.Vector3{c.a, c.b})
+	}
+
+	seen := make(map[types.Vector3]bool)
+	result := []types.Vector3{}
+	lastLink := []types.Vector3{}
+
+out:
+	for _, l := range links {
+		for _, n := range l {
+			if !seen[n] {
+				seen[n] = true
+				result = append(result, n)
+			}
+
+			if len(result) == len(points) {
+				lastLink = l
+				break out
+			}
+		}
+	}
+
+	sum := lastLink[0].X * lastLink[1].X
+	fmt.Println(lastLink)
+	fmt.Println(sum)
 }
 
 func Shorten(i int) {
