@@ -21,8 +21,7 @@ var n = 1000
 func Day08_part1(points []types.Vector3) {
 	for i, a := range points {
 		for _, b := range points[i+1:] {
-			d2 := math.Pow(float64(b.X-a.X), 2) + math.Pow(float64(b.Y-a.Y), 2) + math.Pow(float64(b.Z-a.Z), 2)
-			d := math.Sqrt(d2)
+			d := math.Pow(float64(b.X-a.X), 2) + math.Pow(float64(b.Y-a.Y), 2) + math.Pow(float64(b.Z-a.Z), 2) // no need to sqrt, distance is only for reference
 			conns = append(conns, connection{a: a, b: b, distance: d})
 		}
 	}
