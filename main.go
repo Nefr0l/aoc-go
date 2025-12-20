@@ -17,7 +17,7 @@ func main() {
 	start := time.Now()
 	var lines = get_lines()
 	var v3 = lines_to_vector3(lines, ",")
-	days.Day08_part2(v3)
+	days.Day08_part1(v3)
 
 	fmt.Println(time.Since(start))
 }

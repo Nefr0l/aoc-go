@@ -14,12 +14,8 @@ type connection struct {
 	distance float64
 }
 
-type link struct {
-	points []types.Vector3
-}
-
 var conns []connection
-var links []link
+var links [][]types.Vector3
 var n = 1000
 
 func Day08_part1(points []types.Vector3) {
@@ -43,40 +39,29 @@ func Day08_part1(points []types.Vector3) {
 
 	conns = conns[:n]
 	for _, c := range conns {
-		links = append(links, link{[]types.Vector3{c.a, c.b}})
+		links = append(links, []types.Vector3{c.a, c.b})
 	}
 
-	// join connections together
+	// join links together
 	for i := 0; i < len(links)-1; i++ {
-		fmt.Println("")
-		fmt.Println(i)
-
-		for j := 0; j < 10; j++ { // random ahh value
-			ShortenLink(i)
-		}
+		Shorten(i)
 	}
 
 	// get lengths of top 3 links
 	sort.Slice(links, func(i, j int) bool {
-		return len(links[i].points) > len(links[j].points)
+		return len(links[i]) > len(links[j])
 	})
 
 	sum := 1
-	for i, v := range links {
-		sum *= len(v.points)
-		fmt.Println(v)
-
-		if i == 2 {
-			break
-		}
+	links = links[:3]
+	for _, v := range links {
+		sum *= len(v)
 	}
 
 	fmt.Println(sum)
 }
 
 func Day08_part2(points []types.Vector3) {
-	// get shortest connections
-
 	for i, a := range points {
 		for j := i + 1; j < len(points); j++ {
 			b := points[j]
@@ -87,32 +72,27 @@ func Day08_part2(points []types.Vector3) {
 			d := math.Sqrt(a2 + b2 + c2)
 
 			conns = append(conns, connection{a: a, b: b, distance: d})
-			//points = slices.Delete(points, i, i+1)
 		}
 	}
-
-	fmt.Println(conns[len(conns)-1])
-
 }
 
-func ShortenLink(index int) link {
+func Shorten(index int) {
 	var indexesToDelete []int
 
 	// search for links with duplicate values
 	for j := index + 1; j < len(links); j++ {
-		for jPoint := 0; jPoint < len(links[j].points); jPoint++ {
-
-			n := links[j].points[jPoint]
-			idx := slices.Index(links[index].points, n)
+		for jPoint := 0; jPoint < len(links[j]); jPoint++ {
+			n := links[j][jPoint]
+			idx := slices.Index(links[index], n)
 
 			if idx != -1 {
-				links[index].points = append(links[index].points, links[j].points...)
+				links[index] = append(links[index], links[j]...)
 				indexesToDelete = append(indexesToDelete, j)
-
 				break
 			}
 		}
 	}
+	Clear(index)
 
 	// join links
 	for idx := len(indexesToDelete) - 1; idx >= 0; idx-- {
@@ -120,26 +100,27 @@ func ShortenLink(index int) link {
 		links = slices.Delete(links, foo, foo+1)
 	}
 
-	RemoveDupes(index)
-	return links[index]
+	if len(indexesToDelete) > 0 {
+		Shorten(index)
+	}
 }
 
-func RemoveDupes(index int) {
-	var temp link = links[index]
+func Clear(index int) {
+	var temp = links[index]
 
-	sort.Slice(temp.points, func(i, j int) bool {
-		return temp.points[i].X <= temp.points[j].X
+	sort.Slice(temp, func(i, j int) bool {
+		return temp[i].X < temp[j].X
 	})
 
 	seen := make(map[types.Vector3]bool)
 	result := []types.Vector3{}
 
-	for i := 0; i < len(temp.points); i++ {
-		if !seen[temp.points[i]] {
-			seen[temp.points[i]] = true
-			result = append(result, temp.points[i])
+	for i := 0; i < len(temp); i++ {
+		if !seen[temp[i]] {
+			seen[temp[i]] = true
+			result = append(result, temp[i])
 		}
 	}
 
-	links[index].points = result
+	links[index] = result
 }
