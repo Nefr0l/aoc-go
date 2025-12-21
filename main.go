@@ -16,6 +16,8 @@ var data_path = "./demo.txt"
 func main() {
 	start := time.Now()
 	var lines = get_lines()
+
+	// run day
 	var v = lines_to_vector2(lines, ",")
 	days.Day09_part1(v)
 
@@ -24,7 +26,7 @@ func main() {
 
 // specific days
 func run_day05(lines []string) {
-	var point = slices.Index(lines, "") // day05
+	var point = slices.Index(lines, "")
 	days.Day05_part2(lines_to_vector2(lines[:point], "-"), lines_to_int_slice(lines[point+1:]))
 }
 

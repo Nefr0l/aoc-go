@@ -12,7 +12,6 @@ func Day01(dict []dict.Dict) error {
 	fmt.Println(dict)
 
 	for _, entry := range dict {
-
 		var zerosBefore = zeros
 
 		fmt.Printf("[ENTRY]: Value: %03d rotated by %v%02v. ", curr, entry.Key, entry.Value)
@@ -43,7 +42,7 @@ func Day01(dict []dict.Dict) error {
 			}
 		}
 
-		fmt.Printf("	[END]: Zeros %02d + %02v = %02v, Rotation: %02v, Value: %00d \n", zerosBefore, zeros-zerosBefore, zeros, entry, curr)
+		fmt.Printf("[END]: Zeros %02d + %02v = %02v, Rotation: %02v, Value: %00d \n", zerosBefore, zeros-zerosBefore, zeros, entry, curr)
 
 	}
 

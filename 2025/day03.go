@@ -23,8 +23,7 @@ func Day03_part1(lines []string) {
 		fmt.Println(len(nums))
 		l := len(nums)
 
-		for j := 0; j < 12; j++ {
-			// don't know what the hell i did here but it works
+		for j := range 12 {
 			lTrim := mxIndex + 1
 			rTrim := l - 11 + j
 			numsTrim := nums[lTrim:rTrim]

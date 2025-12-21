@@ -163,7 +163,7 @@ func get_lines_values(lines []string) {
 func get_columns() {
 	width := len(Lines[0].Values)
 
-	for x := 0; x < width; x++ {
+	for x := range width {
 		var col ColumnValue
 
 		for y := 0; y < len(Lines)-1; y++ {

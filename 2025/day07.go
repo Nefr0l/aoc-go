@@ -111,5 +111,4 @@ func StartBeam(start types.Vector2, lines []string) {
 	if (current.X+1 < len(lines[0]) && (lines[current.Y][current.X+1] != '|')) || (current.X+1 == len(lines[0])-1) {
 		StartBeam(types.Vector2{X: current.X + 1, Y: current.Y - 1}, lines)
 	}
-
 }
