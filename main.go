@@ -19,7 +19,7 @@ func main() {
 
 	// run day
 	var v = lines_to_vector2(lines, ",")
-	days.Day09_part1(v)
+	days.Day09_part2(v)
 
 	fmt.Println(time.Since(start))
 }
