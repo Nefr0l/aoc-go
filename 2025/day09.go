@@ -8,15 +8,11 @@ import (
 )
 
 var maxArea = 0
-var P []types.Vector2
-var Vertexes []types.Vector2
-var Circuit []types.Vector2
+var P []types.Vector2 // points
+var C []types.Vector2 // circuit
 
-var totalMinX int
-var totalMaxX int
-var totalMinY int
-var totalMaxY int
-
+var minValues types.Vector2
+var maxValues types.Vector2
 var polygonFound bool = false
 
 func Day09_part1(points []types.Vector2) {
@@ -35,141 +31,110 @@ func Day09_part1(points []types.Vector2) {
 
 // higher than 225951086 and 288264150
 func Day09_part2(points []types.Vector2) {
-	// get some data to work with
-	P = points
+	// get circuit
+	fmt.Println("Collecting data...")
 
-	X := []int{}
-	Y := []int{}
-	for _, v := range P {
-		X = append(X, v.X)
-		Y = append(Y, v.Y)
+	P = points
+	X, Y := []int{}, []int{}
+
+	for _, p := range P {
+		X = append(X, p.X)
+		Y = append(Y, p.Y)
 	}
 
-	totalMinX = slices.Min(X)
-	totalMaxX = slices.Max(X)
+	minValues = types.Vector2{X: slices.Min(X), Y: slices.Min(Y)}
+	maxValues = types.Vector2{X: slices.Max(X), Y: slices.Max(Y)}
 
-	totalMinY = slices.Min(Y)
-	totalMaxY = slices.Max(Y)
+	s := GetStart()
+	Raycast(types.Vector2{X: 1, Y: 0}, s, []types.Vector2{s})
 
-	fmt.Println("Data collected. Begin to map polygon...")
-
-	// get circuit -- this is now fast, around 4s
-	start := GetStart()
-	Raycast(types.Vector2{X: 1, Y: 0}, start, []types.Vector2{start})
-
-	fmt.Println("Polygon mapping completed, starting analyze...")
-
-	// get max area -- this is now fast
+	// get max area
+	fmt.Println("Getting max area...")
 	maxArea := 0
 
 	for _, p1 := range P {
 	out:
 		for _, p2 := range P {
-			// get data about 2 points
-			minX := min(p1.X, p2.X)
-			maxX := max(p1.X, p2.X)
+			minX, maxX := min(p1.X, p2.X), max(p1.X, p2.X)
+			minY, maxY := min(p1.Y, p2.Y), max(p1.Y, p2.Y)
+			left, right, top, down := 0, 0, 0, 0
 
-			minY := min(p1.Y, p2.Y)
-			maxY := max(p1.Y, p2.Y)
-
-			overlaps := 0
-			left := false
-			right := false
-			top := false
-			bottom := false
-
-			// optimizations
-			if p1.X == p2.X || p1.Y == p2.Y {
-				continue
-			}
-
+			// get small rects out of the way
 			area := (maxX - minX + 1) * (maxY - minY + 1)
-			if area <= maxArea {
+			if area <= maxArea || p1.X == p2.X || p1.Y == p2.Y {
 				continue
 			}
 
-			// do checks
-			for _, c := range Circuit {
-				// inner check
-				if c.X > minX && c.X < maxX && c.Y > minY && c.Y < maxY {
+			// checks
+			for _, c := range C {
+				if c.X > minX && c.X < maxX && c.Y > minY && c.Y < maxY { // inner check
 					break out
 				}
 
-				// side check
-				if !top && (c.X > minX && c.X < maxX && c.Y == minY) {
-					top = true
-					overlaps++
-				}
-
-				if !bottom && (c.X > minX && c.X < maxX && c.Y == maxY) {
-					bottom = true
-					overlaps++
-				}
-
-				if !right && (c.Y > minY && c.Y < maxY && c.X == minX) {
-					right = true
-					overlaps++
-				}
-
-				if !left && (c.Y > minY && c.Y < maxY && c.X == maxX) {
-					left = true
-					overlaps++
+				if c.X > minX && c.X < maxX && c.Y == minY { // side check part 1
+					top = 1
+				} else if c.X > minX && c.X < maxX && c.Y == maxY {
+					down = 1
+				} else if c.Y > minY && c.Y < maxY && c.X == minX {
+					left = 1
+				} else if c.Y > minY && c.Y < maxY && c.X == maxX {
+					right = 1
 				}
 			}
 
-			if overlaps < 3 {
+			// side check part 2
+			if (left + right + top + down) < 3 {
 				continue
 			}
 
-			fmt.Printf("a: %v	b: %v	area: %v	overlaps: %v \n", p1, p2, area, overlaps)
+			fmt.Printf("a: %v	b: %v	area: %v \n", p1, p2, area)
 			maxArea = area // area is max area at this point
 		}
-
-		//fmt.Printf("Point %v checked \n", i)
 	}
 
 	fmt.Println(maxArea)
 }
 
-func Raycast(velocity types.Vector2, current types.Vector2, vertexes []types.Vector2) {
-	line := []types.Vector2{}
+func Raycast(velocity types.Vector2, curr types.Vector2, vertexes []types.Vector2) {
+	side := []types.Vector2{}
 
 	for {
-		if polygonFound || (current.X > totalMaxX || current.X < totalMinX || current.Y < totalMinY || current.Y > totalMaxY) {
+		if polygonFound || curr.X > maxValues.X || curr.X < minValues.X || curr.Y < minValues.Y || curr.Y > maxValues.Y {
 			return
 		}
 
-		current.X += velocity.X
-		current.Y += velocity.Y
+		curr.X += velocity.X
+		curr.Y += velocity.Y
 
 		// check if current is vertex
-		res := Search(current)
-		line = append(line, current)
+		res := Search(curr)
 
 		if res == nil {
+			side = append(side, curr) // prevent adding vertexes to circuit
 			continue
 		}
 
 		// add points to circuit
-		Circuit = append(Circuit, line...)
+		C = append(C, side...)
 
-		if len(vertexes) >= len(P) {
+		if len(vertexes) == len(P) {
 			polygonFound = true
 			return
 		}
 
-		if slices.Contains(vertexes, current) {
+		if slices.Contains(vertexes, curr) {
 			return
 		}
 
-		vertexes = append(vertexes, current)
+		vertexes = append(vertexes, curr)
 
+		// split ray
 		if velocity.X != 0 {
-			Raycast(types.Vector2{X: 0, Y: 1}, current, vertexes)
-			Raycast(types.Vector2{X: 0, Y: -1}, current, vertexes)
+			Raycast(types.Vector2{X: 0, Y: 1}, curr, vertexes)
+			Raycast(types.Vector2{X: 0, Y: -1}, curr, vertexes)
 		} else if velocity.Y != 0 {
-			Raycast(types.Vector2{X: -1, Y: 0}, current, vertexes)
-			Raycast(types.Vector2{X: 1, Y: 0}, current, vertexes)
+			Raycast(types.Vector2{X: -1, Y: 0}, curr, vertexes)
+			Raycast(types.Vector2{X: 1, Y: 0}, curr, vertexes)
 		}
 	}
 }
