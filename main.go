@@ -21,7 +21,8 @@ func main() {
 	var v = lines_to_vector2(lines, ",")
 	days.Day09_part2(v)
 
-	fmt.Println(time.Since(start))
+	end := time.Since(start)
+	fmt.Println(end)
 }
 
 // specific days
